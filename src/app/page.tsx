@@ -1,35 +1,87 @@
+"use client";
+
 import Link from "next/link";
+import { useUser } from "~/components/UserProvider";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function HomePage() {
+  const { user, loading } = useUser();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!loading && user) {
+      router.push("/dashboard");
+    }
+  }, [user, loading, router]);
+
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-white">
+        <div className="text-gray-600">Loading...</div>
+      </div>
+    );
+  }
+
+  if (user) {
+    return null; // Will redirect to dashboard
+  }
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c] text-white">
-      <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16">
-        <h1 className="text-5xl font-extrabold tracking-tight text-white sm:text-[5rem]">
-          Create <span className="text-[hsl(280,100%,70%)]">T3</span> App
-        </h1>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8">
+    <main className="min-h-screen bg-white">
+      <div className="container mx-auto px-4 py-16">
+        {/* Header */}
+        <div className="mb-16 text-center">
+          <h1 className="mb-4 text-6xl font-bold text-gray-900">
+            Code<span className="text-gray-600">Connect</span>
+          </h1>
+          <p className="mx-auto max-w-2xl text-xl text-gray-600">
+            A minimalistic collaborative development platform. Create projects,
+            manage files, and work together with your team in a clean,
+            distraction-free environment.
+          </p>
+        </div>
+
+        {/* Action Cards */}
+        <div className="mx-auto mb-16 grid max-w-4xl grid-cols-1 gap-8 md:grid-cols-2">
           <Link
-            className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
-            href="https://create.t3.gg/en/usage/first-steps"
-            target="_blank"
+            href="/auth/login"
+            className="group cursor-pointer rounded-lg border border-gray-200 bg-white p-6 shadow-sm transition-all duration-200 hover:shadow-md"
           >
-            <h3 className="text-2xl font-bold">First Steps →</h3>
-            <div className="text-lg">
-              Just the basics - Everything you need to know to set up your
-              database and authentication.
+            <div className="text-center">
+              <h3 className="mb-3 text-2xl font-semibold text-gray-900 transition-colors group-hover:text-gray-700">
+                Get Started
+              </h3>
+              <p className="text-gray-600">
+                Sign in to create your first organization and start building
+                projects together.
+              </p>
             </div>
           </Link>
-          <Link
-            className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
-            href="https://create.t3.gg/en/introduction"
-            target="_blank"
-          >
-            <h3 className="text-2xl font-bold">Documentation →</h3>
-            <div className="text-lg">
-              Learn more about Create T3 App, the libraries it uses, and how to
-              deploy it.
+
+          <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+            <div className="text-center">
+              <h3 className="mb-3 text-2xl font-semibold text-gray-900">
+                Features
+              </h3>
+              <ul className="space-y-2 text-left text-gray-600">
+                <li>• Organizations & team management</li>
+                <li>• Project creation & collaboration</li>
+                <li>• File management system</li>
+                <li>• Role-based permissions</li>
+              </ul>
             </div>
-          </Link>
+          </div>
+        </div>
+
+        {/* Status */}
+        <div className="text-center">
+          <div className="inline-flex items-center gap-3 rounded-full border border-gray-200 bg-gray-50 px-4 py-2">
+            <div className="h-2 w-2 rounded-full bg-green-500"></div>
+            <span className="text-sm font-medium text-gray-700">
+              Platform Status: Active
+            </span>
+          </div>
         </div>
       </div>
     </main>

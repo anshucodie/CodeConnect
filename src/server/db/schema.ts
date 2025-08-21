@@ -12,16 +12,34 @@ import { index, pgTableCreator } from "drizzle-orm/pg-core";
  */
 export const createTable = pgTableCreator((name) => `code-connect_${name}`);
 
-export const posts = createTable(
-  "post",
+// User table that syncs with Supabase auth.users
+export const users = createTable(
+  "user",
   (d) => ({
-    id: d.integer().primaryKey().generatedByDefaultAsIdentity(),
-    name: d.varchar({ length: 256 }),
+    id: d.uuid().primaryKey(), // This should match Supabase auth.users.id
+    email: d.varchar({ length: 255 }).notNull(),
+    name: d.varchar({ length: 255 }),
+    avatarUrl: d.varchar({ length: 500 }),
     createdAt: d
       .timestamp({ withTimezone: true })
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
     updatedAt: d.timestamp({ withTimezone: true }).$onUpdate(() => new Date()),
   }),
-  (t) => [index("name_idx").on(t.name)],
+  (t) => [index("email_idx").on(t.email)],
+);
+
+export const posts = createTable(
+  "post",
+  (d) => ({
+    id: d.integer().primaryKey().generatedByDefaultAsIdentity(),
+    name: d.varchar({ length: 256 }),
+    userId: d.uuid().references(() => users.id), // Link posts to users
+    createdAt: d
+      .timestamp({ withTimezone: true })
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
+    updatedAt: d.timestamp({ withTimezone: true }).$onUpdate(() => new Date()),
+  }),
+  (t) => [index("name_idx").on(t.name), index("user_idx").on(t.userId)],
 );
